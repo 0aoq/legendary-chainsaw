@@ -48,6 +48,10 @@ inquirer
             message: 'Extension Name:'
         },
         {
+            name: 'description',
+            message: 'Extension Description:'
+        },
+        {
             name: 'version',
             message: 'Extension Version:',
             default: '1.0.0'
@@ -56,10 +60,6 @@ inquirer
             name: 'id',
             message: 'Extension Id:',
             default: 'extension@example.com'
-        },
-        {
-            name: 'description',
-            message: 'Extension Description:'
         },
         {
             name: 'runurl',
