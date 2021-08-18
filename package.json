@@ -2,9 +2,9 @@
     "name": "create-extension-directory",
     "version": "0.0.1",
     "description": "Creates a directory structure for a browser extension.",
-    "main": "create-extension-directory.js",
+    "main": "package/create-extension-directory.js",
     "scripts": {
-        "start": "node create-extension-directory.js"
+        "start": "node package/create-extension-directory.js"
     },
     "keywords": [
         "browser-extension",
