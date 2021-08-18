@@ -40,6 +40,42 @@ const getUrlList = function(list) {
     return list1
 }
 
+const handleAnswers = function(answers) {
+    if (answers.permissionUrls.includes(", ")) { answers.permissionUrls = answers.permissionUrls.split(", ") }
+    if (answers.contentUrls.includes(", ")) { answers.contentUrls = answers.contentUrls.split(", ") }
+
+    let urls = getUrlList(answers.permissionUrls)
+    let urls1 = getUrlList(answers.contentUrls)
+
+    makedir(process.cwd(), "extension")
+    makedir(process.cwd(), "extension/src")
+
+    const extensionPath = `${process.cwd()}/extension`
+    const srcPath = `${extensionPath}/src`
+
+    editfile(extensionPath, "manifest.json", JSON.stringify({
+        "name": answers.name,
+        "version": answers.version,
+        "manifest_version": 2,
+        "description": answers.description,
+        "icons": {},
+        "browser_specific_settings": {
+            "gecko": {
+                "id": answers.id
+            }
+        },
+        "permissions": urls,
+        "content_scripts": [{
+            "matches": urls1,
+            "run_at": "document_end",
+            "css": ["src/styles.css"],
+            "js": ["src/plugin.js"]
+        }]
+    }))
+    editfile(srcPath, "styles.css", `/* Extension stlyesheet */`)
+    editfile(srcPath, "plugin.js", `console.log("[${answers.name}@${answers.version}]: Loaded!")`)
+}
+
 // Create prompt
 
 inquirer
@@ -62,46 +98,18 @@ inquirer
             default: 'extension@example.com'
         },
         {
-            name: 'runurl',
+            name: 'permissionUrls',
             message: 'Access Urls:'
         },
         {
-            name: 'runurl1',
+            name: 'contentUrls',
             message: 'Run Content Scripts on Urls:'
         },
     ])
     .then(answers => {
-        if (answers.runurl.includes(", ")) { answers.runurl = answers.runurl.split(", ") }
-        if (answers.runurl1.includes(", ")) { answers.runurl1 = answers.runurl.split(", ") }
-
-        let urls = getUrlList(answers.runurl)
-        let urls1 = getUrlList(answers.runurl1)
-
-        makedir(process.cwd(), "extension")
-        makedir(process.cwd(), "extension/src")
-
-        const extensionPath = `${process.cwd()}/extension`
-        const srcPath = `${extensionPath}/src`
-
-        editfile(extensionPath, "manifest.json", JSON.stringify({
-            "name": answers.name,
-            "version": answers.version,
-            "manifest_version": 2,
-            "description": answers.description,
-            "icons": {},
-            "browser_specific_settings": {
-                "gecko": {
-                    "id": answers.id
-                }
-            },
-            "permissions": urls,
-            "content_scripts": [{
-                "matches": urls1,
-                "run_at": "document_end",
-                "css": ["src/styles.css"],
-                "js": ["src/plugin.js"]
-            }]
-        }))
-        editfile(srcPath, "styles.css", `/* Extension stlyesheet */`)
-        editfile(srcPath, "plugin.js", `console.log("[${answers.name}@${answers.version}]: Loaded!")`)
+        handleAnswers(answers)
     })
+
+module.exports = (answers) => {
+    handleAnswers(answers)
+}
